@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe of Life | 飲食新規事業の設計支援</title>
+<style>
+  :root {
+    --ink: #2f2822;
+    --ink-soft: #5f564c;
+    --muted: #8e8170;
+    --line: #dfd4c2;
+    --paper: #fffaf1;
+    --milk: #f7efe2;
+    --sage: #6b7658;
+    --sage-light: #eef0e5;
+    --clay: #9e745e;
+    --brass: #b79765;
+    --coffee: #3a302b;
+    --shadow: 0 24px 70px rgba(38, 38, 34, .14);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Times New Roman", serif;
+    background: var(--paper);
+    color: var(--ink);
+    letter-spacing: .05em;
+  }
+  a { color: inherit; }
+
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 68px;
+    padding: 0 clamp(20px, 4vw, 56px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 250, 241, .86);
+    border-bottom: 1px solid rgba(216, 210, 195, .8);
+    backdrop-filter: blur(18px);
+  }
+  .nav-logo {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    height: 50px;
+  }
+  .nav-logo img {
+    display: block;
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+  }
+  .nav-links {
+    display: flex;
+    gap: 26px;
+    align-items: center;
+  }
+  .nav-links a {
+    font-size: 13px;
+    letter-spacing: .06em;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+  .nav-links .nav-cta { color: #fffaf0; }
+  .nav-cta,
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 13px 22px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: #fffaf0;
+    font-size: 14px;
+    font-family: "Helvetica Neue", "Yu Gothic", YuGothic, Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: .02em;
+    text-decoration: none;
+    box-shadow: 0 14px 32px rgba(38, 38, 34, .18);
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .nav-cta {
+    min-height: 40px;
+    padding: 10px 18px;
+    font-size: 12px;
+  }
+  .btn:hover,
+  .nav-cta:hover {
+    transform: translateY(-1px);
+    background: #11110f;
+    box-shadow: 0 18px 38px rgba(38, 38, 34, .22);
+  }
+  .btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    box-shadow: none;
+  }
+
+  section,
+  .section-inner {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+  }
+  section { padding: 64px 0; }
+  section,
+  .final-cta,
+  .contact {
+    scroll-margin-top: 88px;
+  }
+  .band {
+    max-width: none;
+    width: 100%;
+    background: var(--milk);
+  }
+  .band .section-inner { padding: 64px 0; }
+  .section-kicker {
+    margin-bottom: 16px;
+    font-size: 11px;
+    font-family: "Helvetica Neue", "Yu Gothic", YuGothic, Arial, sans-serif;
+    font-weight: 600;
+    letter-spacing: .22em;
+    color: var(--clay);
+    text-transform: uppercase;
+  }
+  .section-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+    gap: 48px;
+    align-items: end;
+    margin-bottom: 28px;
+  }
+  h1, h2, h3 { font-weight: 500; letter-spacing: .08em; }
+  .section-title {
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.45;
+  }
+  .section-lead {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 2;
+  }
+
+  .hero {
+    position: relative;
+    min-height: calc(100vh - 68px);
+    display: grid;
+    align-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 18% 24%, rgba(255, 255, 255, .96) 0%, rgba(255, 250, 241, .88) 26%, rgba(255, 250, 241, .55) 44%, rgba(255, 250, 241, .1) 66%),
+      linear-gradient(90deg, rgba(255, 250, 241, .94) 0%, rgba(255, 250, 241, .72) 33%, rgba(255, 250, 241, .16) 64%, rgba(255, 250, 241, 0) 100%),
+      url("assets/hero-menu-strategy.png") center right / cover no-repeat;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(115deg, rgba(255, 244, 226, .38), rgba(255, 244, 226, 0) 48%),
+      radial-gradient(circle at 28% 18%, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 28%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 64px;
+    background: linear-gradient(0deg, rgba(255, 253, 248, 1), rgba(255, 253, 248, 0));
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 82px 0 92px;
+  }
+  .hero-copy { max-width: 680px; }
+  .hero-target {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 8px 13px;
+    border: 1px solid rgba(158, 116, 94, .28);
+    border-radius: 999px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .hero-target::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--brass);
+  }
+  .hero-pretitle {
+    margin: 0 0 10px;
+    color: var(--clay);
+    font-size: clamp(15px, 1.7vw, 20px);
+    line-height: 1.8;
+    letter-spacing: .14em;
+  }
+  .hero h1 {
+    color: var(--ink);
+    font-size: clamp(34px, 4.7vw, 58px);
+    line-height: 1.55;
+    margin-bottom: 28px;
+    text-shadow: 0 1px 18px rgba(255, 250, 241, .72);
+  }
+  .hero h1 span {
+    display: block;
+    color: var(--clay);
+  }
+  .hero-sub {
+    max-width: 580px;
+    color: var(--ink-soft);
+    font-size: 16px;
+    line-height: 2.15;
+    margin-bottom: 34px;
+    text-shadow: 0 1px 14px rgba(255, 250, 241, .78);
+  }
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .hero .btn {
+    background: var(--coffee);
+    color: #fffaf0;
+  }
+  .hero .btn.secondary {
+    background: rgba(255, 250, 241, .5);
+    color: var(--ink);
+    border-color: rgba(158, 116, 94, .32);
+  }
+  .hero-proof {
+    position: absolute;
+    right: 0;
+    bottom: 52px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: min(560px, 50vw);
+    border: 1px solid rgba(158, 116, 94, .24);
+    background: rgba(255, 250, 241, .7);
+    backdrop-filter: blur(18px);
+  }
+  .proof-item {
+    padding: 20px 22px;
+    border-right: 1px solid rgba(158, 116, 94, .22);
+  }
+  .proof-item:last-child { border-right: 0; }
+  .proof-num {
+    color: var(--ink);
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .proof-label {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  .problem-grid,
+  .service-grid,
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .problem-card,
+  .service-card,
+  .case-card,
+  .type-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 253, 248, .78);
+  }
+  .problem-card {
+    min-height: 150px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .problem-num,
+  .step-num,
+  .case-tag,
+  .type-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--clay);
+  }
+  .problem-text {
+    margin-top: 18px;
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .flow-wrap {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .flow-list {
+    display: grid;
+    gap: 10px;
+  }
+  .flow-step {
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 18px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+  }
+  .flow-step.highlight {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fffaf0;
+  }
+  .flow-step h3 {
+    margin-bottom: 5px;
+    font-size: 16px;
+  }
+  .flow-step p {
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .flow-step.highlight p { color: rgba(255, 250, 240, .7); }
+  .flow-note {
+    position: sticky;
+    top: 92px;
+    padding: 30px;
+    border-radius: 8px;
+    background: var(--sage);
+    color: #fffaf0;
+    box-shadow: var(--shadow);
+  }
+  .flow-note h3 {
+    margin-bottom: 14px;
+    font-size: 21px;
+    line-height: 1.55;
+  }
+  .flow-note p {
+    color: rgba(255, 250, 240, .75);
+    font-size: 14px;
+    line-height: 2;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 330px minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+  }
+  .about-photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--milk);
+  }
+  .about-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .about-photo figcaption {
+    content: "Mayuko Kawai";
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+    padding: 18px;
+    border-radius: 8px;
+    background: rgba(255, 253, 248, .86);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    backdrop-filter: blur(12px);
+  }
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+  .stat {
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--milk);
+  }
+  .stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--sage);
+  }
+  .stat-label {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .about-bio {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 2.05;
+  }
+  .about-media {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+  .media-tag,
+  .case-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fffdf8;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .service-card {
+    padding: 28px;
+    background: var(--paper);
+  }
+  .service-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 18px;
+    border-radius: 50%;
+    background: var(--sage-light);
+    color: var(--sage);
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .service-title {
+    margin-bottom: 10px;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  .service-body {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.9;
+  }
+  .service-note {
+    margin-top: 24px;
+    padding: 22px 26px;
+    border-left: 4px solid var(--sage);
+    background: #fffdf8;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  .diag-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 28px;
+    padding: 32px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: #fffaf0;
+    box-shadow: var(--shadow);
+  }
+  .diag-main h3 {
+    margin-bottom: 8px;
+    font-size: 25px;
+    line-height: 1.5;
+  }
+  .diag-sub {
+    margin-bottom: 24px;
+    color: rgba(255, 250, 240, .68);
+    font-size: 14px;
+    line-height: 1.9;
+  }
+  .diag-form {
+    display: grid;
+    gap: 14px;
+  }
+  .field label {
+    display: block;
+    margin-bottom: 7px;
+    color: rgba(255, 250, 240, .72);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  select,
+  input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 250, 240, .22);
+    border-radius: 8px;
+    background: rgba(255, 253, 248, .1);
+    color: #fffaf0;
+    font-size: 14px;
+  }
+  input::placeholder { color: rgba(255, 250, 240, .45); }
+  select option { color: var(--ink); }
+  .diag-btn {
+    width: 100%;
+    height: 52px;
+    border: 0;
+    border-radius: 8px;
+    background: #fffaf0;
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .diag-side {
+    padding: 24px;
+    border-radius: 8px;
+    background: rgba(255, 250, 240, .08);
+  }
+  .diag-side-title {
+    margin-bottom: 16px;
+    color: rgba(255, 250, 240, .72);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+  }
+  .diag-types {
+    display: grid;
+    gap: 10px;
+  }
+  .type-card {
+    padding: 16px;
+    background: rgba(255, 253, 248, .95);
+  }
+  .type-title {
+    margin: 5px 0 4px;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 800;
+  }
+  .type-body {
+    color: var(--ink-soft);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .case-card {
+    overflow: hidden;
+    padding: 30px;
+    background: var(--paper);
+  }
+  .case-media {
+    margin: -30px -30px 24px;
+    aspect-ratio: 570 / 360;
+    overflow: hidden;
+    background: var(--milk);
+  }
+  .case-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+  }
+  .case-card:hover .case-media img {
+    transform: scale(1.025);
+  }
+  .case-result {
+    margin: 18px 0 12px;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.55;
+  }
+  .case-body {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.9;
+  }
+
+  .faq-list {
+    border-top: 1px solid var(--line);
+  }
+  .faq-item {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 40px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .faq-q {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.7;
+  }
+  .faq-q::before {
+    content: "Q";
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: var(--sage-light);
+    color: var(--sage);
+    font-size: 12px;
+  }
+  .faq-a {
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 2;
+  }
+
+  .final-cta {
+    padding: 68px 0;
+    background:
+      linear-gradient(120deg, rgba(58, 48, 43, .92), rgba(107, 118, 88, .84)),
+      url("assets/hero-menu-strategy.png") center / cover no-repeat;
+    color: #fffaf0;
+  }
+  .final-cta-inner {
+    width: min(920px, calc(100% - 40px));
+    margin: 0 auto;
+    text-align: center;
+  }
+  .final-cta h2 {
+    margin-bottom: 18px;
+    font-size: clamp(30px, 4vw, 48px);
+    line-height: 1.45;
+  }
+  .final-cta p {
+    margin: 0 auto 30px;
+    max-width: 620px;
+    color: rgba(255, 250, 240, .72);
+    font-size: 15px;
+    line-height: 2;
+  }
+  .final-cta .btn {
+    background: #fffaf0;
+    color: var(--ink);
+  }
+  .contact {
+    max-width: none;
+    width: 100%;
+    padding: 0;
+    background:
+      radial-gradient(circle at 8% 0%, rgba(255, 255, 255, .92), rgba(255, 250, 241, 0) 30%),
+      var(--paper);
+  }
+  .contact-inner {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 68px 0;
+    display: grid;
+    grid-template-columns: minmax(0, .85fr) minmax(320px, 1.15fr);
+    gap: 56px;
+    align-items: start;
+  }
+  .contact-copy {
+    position: sticky;
+    top: 92px;
+  }
+  .contact-copy h2 {
+    margin-bottom: 18px;
+    font-size: clamp(30px, 4vw, 48px);
+    line-height: 1.55;
+  }
+  .contact-copy p {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 2.1;
+  }
+  .contact-note {
+    margin-top: 24px;
+    padding: 18px 20px;
+    border-left: 4px solid var(--sage);
+    background: rgba(247, 239, 226, .86);
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.9;
+  }
+  .contact-form {
+    display: grid;
+    gap: 16px;
+    padding: 32px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 253, 248, .92);
+    box-shadow: var(--shadow);
+  }
+  .contact-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .contact-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .08em;
+  }
+  .contact-form label span {
+    margin-left: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400;
+  }
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fffdf8;
+    color: var(--ink);
+    font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif;
+    font-size: 14px;
+    letter-spacing: .04em;
+  }
+  .contact-form input,
+  .contact-form select {
+    height: 48px;
+    padding: 0 14px;
+  }
+  .contact-form textarea {
+    min-height: 140px;
+    padding: 14px;
+    resize: vertical;
+    line-height: 1.8;
+  }
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder {
+    color: #9a9283;
+  }
+  .contact-submit {
+    width: 100%;
+    height: 54px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--coffee);
+    color: #fffaf0;
+    font-family: "Helvetica Neue", "Yu Gothic", YuGothic, Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    cursor: pointer;
+  }
+  .contact-privacy {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .contact-embed {
+    min-height: 420px;
+    align-content: center;
+  }
+  .contact-embed iframe {
+    width: 100%;
+    min-height: 640px;
+    border: 0;
+  }
+  .contact-link-panel {
+    min-height: 360px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+  }
+  .contact-link-panel p {
+    margin-bottom: 24px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 2;
+  }
+  footer {
+    padding: 34px 40px;
+    background: var(--coffee);
+    text-align: center;
+  }
+  footer p,
+  footer a {
+    color: rgba(255, 250, 240, .58);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-decoration: none;
+  }
+  footer a:hover {
+    color: #c9b88f;
+  }
+
+  @media (max-width: 900px) {
+    .nav-links a:not(.nav-cta) { display: none; }
+    .hero { min-height: auto; background-position: 62% center; }
+    .hero-inner { padding: 64px 0 130px; }
+    .hero-proof {
+      left: 20px;
+      right: 20px;
+      bottom: 34px;
+      width: auto;
+    }
+    .section-head,
+    .flow-wrap,
+    .about-grid,
+    .diag-wrap,
+    .contact-inner,
+    .faq-item {
+      grid-template-columns: 1fr;
+    }
+    .flow-note { position: static; }
+    .contact-copy { position: static; }
+    .about-stats { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .site-nav { height: 62px; padding: 0 16px; }
+    .nav-cta { padding: 9px 12px; font-size: 11px; }
+    section { padding: 52px 0; }
+    .band .section-inner { padding: 52px 0; }
+    .hero-inner,
+    section,
+    .section-inner { width: min(100% - 28px, 1120px); }
+    .hero-inner { padding: 56px 0; }
+    .hero h1 { font-size: 34px; }
+    .hero-actions { align-items: stretch; }
+    .btn { width: 100%; }
+    .hero-proof {
+      position: static;
+      width: 100%;
+      margin-top: 28px;
+      grid-template-columns: 1fr;
+    }
+    .proof-item {
+      padding: 12px 16px;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255, 250, 240, .18);
+    }
+    .proof-item:last-child { border-bottom: 0; }
+    .problem-grid,
+    .service-grid,
+    .case-grid {
+      grid-template-columns: 1fr;
+    }
+    .flow-step {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .diag-wrap { padding: 22px; }
+    .contact-inner {
+      width: min(100% - 28px, 1120px);
+      padding: 56px 0;
+    }
+    .contact-form { padding: 22px; }
+    .contact-row { grid-template-columns: 1fr; }
+    .nav-logo { height: 42px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a class="nav-logo" href="#top" aria-label="Recipe of Life">
+    <img src="assets/rol-logo-transparent.png" alt="Recipe of Life">
+  </a>
+  <div class="nav-links">
+    <a href="#case">実績</a>
+    <a href="#service">サービス</a>
+    <a href="#faq">よくある質問</a>
+    <a href="#contact" class="nav-cta">無料相談を予約する</a>
+  </div>
+</nav>
+
+<main>
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="hero-target">新規事業として飲食参入を検討している経営者・事業責任者の方へ</div>
+        <p class="hero-pretitle">メニュー開発のその前に・・・</p>
+        <h1>飲食新規事業を、<span>利益の出る構造から設計する。</span></h1>
+        <p class="hero-sub">
+          メニューのイメージはある。でも、なぜそれが売れるかを説明できますか。
+          点在するやりたいことを整理し、コンセプト・価格・運営までつながる形にします。
+        </p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn">無料相談を予約する（30分）</a>
+          <a href="#structure" class="btn secondary">設計の考え方を見る</a>
+        </div>
+      </div>
+      <div class="hero-proof" aria-label="Recipe of Lifeの実績">
+        <div class="proof-item">
+          <div class="proof-num">12年+</div>
+          <div class="proof-label">食ビジネス支援実績</div>
+        </div>
+        <div class="proof-item">
+          <div class="proof-num">20社</div>
+          <div class="proof-label">カフェ開業支援実績</div>
+        </div>
+        <div class="proof-item">
+          <div class="proof-num">300点</div>
+          <div class="proof-label">年間納品レシピ数</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="problem">
+    <div class="section-head">
+      <div>
+        <p class="section-kicker">02 / Problem</p>
+        <h2 class="section-title">メニューを決める前に、整理すべきことがあります。</h2>
+      </div>
+      <p class="section-lead">
+        飲食事業は、料理だけでは成立しません。誰に、どの価格で、どんな体験として届けるのか。その整合性が利益を左右します。
+      </p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-num">01</div>
+        <p class="problem-text">メニューのイメージはあるが、誰に頼めばいいかわからない</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-num">02</div>
+        <p class="problem-text">自社でやろうとしたが、どこから手をつければいいか迷っている</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-num">03</div>
+        <p class="problem-text">飲食の経験がなく、参入後のリスクが具体的に見えない</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-num">04</div>
+        <p class="problem-text">メニュー・空間・ターゲット・価格がバラバラのまま進んでいる</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="structure" class="band">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">03 / Structure</p>
+          <h2 class="section-title">メニュー開発は、全体設計の一部にすぎません。</h2>
+        </div>
+        <p class="section-lead">
+          多くの企業が「メニューをつくる」ことから始めます。けれど利益の出る飲食事業には、メニューの前に設計すべき順番があります。
+        </p>
+      </div>
+      <div class="flow-wrap">
+        <div class="flow-list">
+          <div class="flow-step highlight">
+            <div class="step-num">STEP 1</div>
+            <div>
+              <h3>コンセプト設計</h3>
+              <p>誰に・何を・なぜ提供するか。ここがすべての起点です。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">STEP 2</div>
+            <div>
+              <h3>ターゲット・価格設計</h3>
+              <p>客層、利用シーン、価格帯の整合性を構造化します。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">STEP 3</div>
+            <div>
+              <h3>メニュー開発</h3>
+              <p>コンセプトに沿った、売れる理由のあるメニューを設計します。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">STEP 4</div>
+            <div>
+              <h3>スタッフ・運営設計</h3>
+              <p>現場で再現できる提供体制とオペレーションを組み立てます。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">STEP 5</div>
+            <div>
+              <h3>店舗・器の設計</h3>
+              <p>世界観と機能を両立させる空間づくりへ接続します。</p>
+            </div>
+          </div>
+        </div>
+        <aside class="flow-note">
+          <h3>STEP 3から始めると、店の軸が曖昧になります。</h3>
+          <p>
+            Recipe of Lifeは、メニュー単体ではなく事業の構造から整理します。打ち手を増やす前に、判断基準をつくる。そこから、売れるメニューと続けられる運営を設計します。
+          </p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-head">
+      <div>
+        <p class="section-kicker">04 / About</p>
+        <h2 class="section-title">食ビジネスの構造を設計する、専門家チームです。</h2>
+      </div>
+      <p class="section-lead">
+        食の表現と事業性の両方を見ながら、経営者の構想を実行できる形へ翻訳します。
+      </p>
+    </div>
+    <div class="about-grid">
+      <figure class="about-photo">
+        <img src="assets/profile-img.jpg" alt="河合 真由子">
+        <figcaption>Mayuko Kawai</figcaption>
+      </figure>
+      <div>
+        <div class="about-stats">
+          <div class="stat">
+            <div class="stat-num">12年+</div>
+            <div class="stat-label">食ビジネス支援実績</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">20社</div>
+            <div class="stat-label">カフェ開業支援実績</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">300点</div>
+            <div class="stat-label">年間納品レシピ数</div>
+          </div>
+        </div>
+        <p class="about-bio">
+          株式会社レシピオブライフ代表。フードコンサルタント。食ブランドの方向性設計、メニュー開発、カフェ開業支援、フードスタイリングまで、食ビジネスの全体を構造的に設計することを専門とする。これまでのカフェ開業支援実績は20社、年間納品レシピ数300点。書籍「盛り付けの基本とアイデア」監修。
+        </p>
+        <div class="about-media">
+          <span class="media-tag">NHK</span>
+          <span class="media-tag">日本テレビ</span>
+          <span class="media-tag">フジテレビ</span>
+          <span class="media-tag">dancyu</span>
+          <span class="media-tag">料理通信</span>
+          <span class="media-tag">他多数</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="service" class="band">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">05 / Service</p>
+          <h2 class="section-title">「何をつくるか」より前に、「なぜつくるか」を整理します。</h2>
+        </div>
+        <p class="section-lead">
+          構想段階から開業前まで、必要な支援範囲を見極めて伴走します。
+        </p>
+      </div>
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="service-icon">1</div>
+          <h3 class="service-title">参入コンセプトの設計</h3>
+          <p class="service-body">ターゲット・提供価値・競合との差別化を構造化。点在するやりたいことを、事業の軸として整理します。</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">2</div>
+          <h3 class="service-title">メニューと価格の構造化</h3>
+          <p class="service-body">コンセプトに沿ったメニュー設計と、利益の出る価格帯の設計。売れるメニューは、目的から逆算してつくります。</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">3</div>
+          <h3 class="service-title">オープン前トレーニング</h3>
+          <p class="service-body">スタッフが再現できる提供体制の構築。マニュアルではなく、理解から始まる運営設計を行います。</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">4</div>
+          <h3 class="service-title">売上設計のサポート</h3>
+          <p class="service-body">客単価・回転数・原価率の設計から、開業後の数値管理まで。利益の構造を事前に設計します。</p>
+        </div>
+      </div>
+      <p class="service-note">
+        支援規模はプロジェクトにより異なります。単発のメニュー開発のみのご依頼も承りますが、成果につなげるためにコンセプト確認を合わせてお勧めしています。
+      </p>
+    </div>
+  </section>
+
+  <section id="diagnosis">
+    <div class="section-head">
+      <div>
+        <p class="section-kicker">06 / Check</p>
+        <h2 class="section-title">3問で、今の状況を確認してみましょう。</h2>
+      </div>
+      <p class="section-lead">
+        相談前に状況を整理したい方へ。回答内容をもとに、今の事業フェーズに合わせた整理ポイントをお送りします。
+      </p>
+    </div>
+    <div class="diag-wrap">
+      <div class="diag-main">
+        <h3>現状確認（約2分）</h3>
+        <p class="diag-sub">入力後、必要に応じて無料相談のご案内をします。</p>
+        <form class="diag-form">
+          <div class="field">
+            <label for="phase">Q1. 現在の検討フェーズは？</label>
+            <select id="phase" name="phase">
+              <option>まだ構想段階</option>
+              <option>ある程度決まっている</option>
+              <option>具体的に動き始めている</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="issue">Q2. 現在最も困っていることは？</label>
+            <select id="issue" name="issue">
+              <option>メニューが決まらない</option>
+              <option>コンセプトが不明確</option>
+              <option>参入自体の判断</option>
+              <option>その他</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="budget">Q3. プロジェクトの想定予算規模は？</label>
+            <select id="budget" name="budget">
+              <option>〜100万円</option>
+              <option>100〜300万円</option>
+              <option>300万円以上</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="email">メールアドレス</label>
+            <input id="email" name="email" type="email" placeholder="name@example.com">
+          </div>
+          <button class="diag-btn" type="button">結果を受け取る</button>
+        </form>
+      </div>
+      <aside class="diag-side">
+        <p class="diag-side-title">回答結果のタイプ例</p>
+        <div class="diag-types">
+          <div class="type-card">
+            <div class="type-tag">TYPE A</div>
+            <div class="type-title">構想設計タイプ</div>
+            <p class="type-body">まず「誰のための事業か」を整理することが最優先です。</p>
+          </div>
+          <div class="type-card">
+            <div class="type-tag">TYPE B</div>
+            <div class="type-title">メニュー具体化タイプ</div>
+            <p class="type-body">コンセプトの確認とあわせてメニューを設計する段階です。</p>
+          </div>
+          <div class="type-card">
+            <div class="type-tag">TYPE C</div>
+            <div class="type-title">全体再設計タイプ</div>
+            <p class="type-body">参入の全体像から構造を組み直す必要があるケースです。</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="case" class="band">
+    <div class="section-inner">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker">07 / Case</p>
+          <h2 class="section-title">支援実績</h2>
+        </div>
+        <p class="section-lead">
+          初期相談では、現状の整理から始めます。必要な支援だけを見極め、事業の成功確度を上げます。
+        </p>
+      </div>
+      <div class="case-grid">
+        <article class="case-card">
+          <figure class="case-media"><img src="assets/case-img_01.jpg" alt="茨城県 Le Caf'e Neuf の支援事例"></figure>
+          <span class="case-tag">レシピ開発 / 調理指導</span>
+          <h3 class="case-result">茨城県 Le Caf'e Neuf</h3>
+          <p class="case-body">シェフ任せだった厨房オペレーションを、アルバイトスタッフでも再現できるフレンチビストロ風カフェメニューへ再構築。ハッシュドビーフは人気の看板メニューになりました。</p>
+        </article>
+        <article class="case-card">
+          <figure class="case-media"><img src="assets/case-img_02.jpg" alt="ホテルグランコンソルト那覇の朝食レストラン支援事例"></figure>
+          <span class="case-tag">ホテル朝食レストラン開業支援</span>
+          <h3 class="case-result">沖縄県 ホテルグランコンソルト那覇</h3>
+          <p class="case-body">朝食のコンセプト提案からメニュー開発、オペレーション構築、調理指導、ブッフェ・食器コーディネートまで全般的に支援しました。</p>
+        </article>
+        <article class="case-card">
+          <figure class="case-media"><img src="assets/case-img_03.jpg" alt="東京都 EATTE のデリバリーブランド支援事例"></figure>
+          <span class="case-tag">ゴーストレストラン開業支援</span>
+          <h3 class="case-result">東京都 EATTE</h3>
+          <p class="case-body">新規デリバリーブランドのコンセプト提案、メニューアドバイス、アートディレクション、販促物制作まで支援。ヘルスコンシャスなサラダ・デリブランドを構築しました。</p>
+        </article>
+        <article class="case-card">
+          <figure class="case-media"><img src="assets/case-img_04.jpg" alt="岩手県 旅館の食事処支援事例"></figure>
+          <span class="case-tag">旅館の食事処開店支援</span>
+          <h3 class="case-result">岩手県 某旅館</h3>
+          <p class="case-body">新規で開店する食事処のメニュー提案、ブッフェ・食器コーディネートを担当。子ども連れ顧客も楽しめるメニュー構成と食事処づくりを提案しました。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="section-head">
+      <div>
+        <p class="section-kicker">08 / FAQ</p>
+        <h2 class="section-title">よくある質問</h2>
+      </div>
+      <p class="section-lead">検討初期でも問題ありません。曖昧な状態を整理するところからご相談いただけます。</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <p class="faq-q">飲食の経験がなくても相談できますか？</p>
+        <p class="faq-a">可能です。むしろ、開業前の段階でコンセプトや売上設計を整理することが重要です。飲食未経験だからこそ、最初に全体の構造を設計することが成功への最短ルートになります。</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">メニュー開発だけの依頼は可能ですか？</p>
+        <p class="faq-a">承ります。ただし、成果につながるメニュー開発のためには、コンセプトやターゲット設計も合わせて確認することをお勧めしています。初回相談でご状況をお聞きした上でご提案します。</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">費用の目安はどのくらいですか？</p>
+        <p class="faq-a">支援範囲によって変動します。コンセプト設計からメニュー開発・オープン支援まで一貫して行う場合、多くのプロジェクトで200万円以上になります。まずは無料相談で状況をお聞きした上でご提案します。</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">どの段階から相談できますか？</p>
+        <p class="faq-a">まだ物件やメニューが決まっていない段階からご相談いただけます。「飲食をやりたいが何から始めればいいかわからない」という状態が、最も支援効果が高いフェーズです。</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="final-cta">
+    <div class="final-cta-inner">
+      <h2>まず、30分話してみてください。</h2>
+      <p>
+        相談内容の準備は不要です。現在の状況をお聞かせいただくだけで構いません。打ち合わせの場で、整理すべきことが見えてきます。
+      </p>
+      <a href="#contact" class="btn">日程を選んで予約する</a>
+    </div>
+  </div>
+
+  <section id="contact" class="contact">
+    <div class="contact-inner">
+      <div class="contact-copy">
+        <p class="section-kicker">09 / Contact</p>
+        <h2>無料相談・<br>お問い合わせ</h2>
+        <p>
+          新規飲食参入、カフェ開業、メニュー開発、既存事業の食領域展開など、現在の状況をお聞かせください。初回は30分を目安に、整理すべき論点を一緒に確認します。
+        </p>
+        <p class="contact-note">
+          公式サイトのお問い合わせページへ移動します。<br>
+          内容を確認後、担当者よりご連絡いたします。
+        </p>
+      </div>
+      <div class="contact-form contact-link-panel">
+        <div>
+          <p>ご相談・お問い合わせは、公式サイトのフォームよりお送りください。</p>
+          <a class="btn" href="https://recipeoflife.jp/contact">お問い合わせページへ進む</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 <a href="https://recipeoflife.jp/">株式会社レシピオブライフ ｜ recipeoflife.jp</a></p>
+</footer>
+
+</body>
+</html>
